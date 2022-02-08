@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  lpd-db:
+    image: postgres:latest
+    ports:
+    - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+  web:
+    image: wtriddle/lpd-test:test
+    ports:
+      - "4000:4000"
+    links:
+      - lpd-db
+    working_dir: /usr/app
+    environment:
+      DATABASE_URL: postgres://postgres:123@lpd-db:5432/postgres
