@@ -14,8 +14,6 @@ export default {
     dbName: process.env.DATABASE_NAME as string,
     type: 'postgresql',
     debug: !__prod__,
-    user: 'postgres',
-    password: '123',
     clientUrl: process.env.DATABASE_URL,
     port: 5432
 } as Parameters<typeof MikroORM.init>[0];
