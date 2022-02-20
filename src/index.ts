@@ -21,7 +21,7 @@ const main = async () => {          // Async ES6 function call to allow promise-
     const app = express();          // Handles server routing
     app.use(express.urlencoded({ extended: true }));
     app.use(cors({
-      origin process.env.CLIENT_URL
+      origin: process.env.CLIENT_URL
     }));
     app.get("/", (_, res) => {      // express endpoint example
         res.send("Welcome to the website! Re-route to /graphql to access the graphql database");          
