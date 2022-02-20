@@ -20,9 +20,7 @@ const main = async () => {          // Async ES6 function call to allow promise-
     /* -------------Express (Basic JS server with URL routing)------------------- */
     const app = express();          // Handles server routing
     app.use(express.urlencoded({ extended: true }));
-    app.use(cors({
-      origin: process.env.CLIENT_URL
-    }));
+    app.use(cors());
     app.get("/", (_, res) => {      // express endpoint example
         res.send("Welcome to the website! Re-route to /graphql to access the graphql database");          
     });
