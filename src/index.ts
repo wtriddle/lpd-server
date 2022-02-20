@@ -8,6 +8,10 @@ import express from "express";
 import {ApolloServer} from 'apollo-server-express'
 import { buildSchema } from "type-graphql";
 import { license_plate_resolver } from "./resolvers/license_plate";
+import fs from 'fs';
+import cors from 'cors';
+
+
 // import cloudinary from "./utils/createCloudinaryClient";
 
 // Main NodeJS program with all components of backend
@@ -15,9 +19,44 @@ const main = async () => {          // Async ES6 function call to allow promise-
 
     /* -------------Express (Basic JS server with URL routing)------------------- */
     const app = express();          // Handles server routing
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cors({
+      origin process.env.CLIENT_URL
+    }));
     app.get("/", (_, res) => {      // express endpoint example
         res.send("Welcome to the website! Re-route to /graphql to access the graphql database");          
     });
+
+    /* --------------------------Image Version Handler-------------------------- */
+    app.post("/version", (req,res) => {
+      console.log("Recieved");
+      if(req.body) {
+        console.log("body is ", req.body);
+      }
+      if(req.body.version) {
+        fs.writeFile("./image_version.txt", req.body.version, () => console.log("Saved!"));
+        res.send("Success!");
+        console.log("Success");
+      }
+      else {
+        res.send("There was an error in uploading the version")
+      }
+      
+    });
+
+    app.get("/version", (_, res) => {
+        fs.readFile('./image_version.txt', 'utf8' , (err, data) => {
+          if (err) {
+            console.error(err)
+            res.send(err);
+            return
+          }
+          res.send({"version" : data});
+        });
+    });
+    /*--------------------------------------------------------------------------- */
+    
+    /*-------------------------Port Listener------------------------------------- */
     app.listen(parseInt(process.env.PORT), () => {        // Listen === define port enpoint to allow connections
       console.log('server started lets go');
       console.log(process.env.DATABASE_URL);
@@ -29,46 +68,7 @@ const main = async () => {          // Async ES6 function call to allow promise-
     const orm = await MikroORM.init(microConfig);       // Link MikroORM interface in JS to postgres server );
     await orm.getMigrator().up();
     /*----------------------------------------------------------------- */
-    
-    /* -------------Image POST Endpoint------------------- */
-    /*
-    app.use(express.json({limit: '50mb'}));
-    app.use(express.urlencoded({limit: '50mb'}));
-    app.post("/", async (req, res) => {      // post image endpoint
-        if(req.body.image)
-        {
-            const file = req.body.image;
-            if (typeof file === "string") {
-                res.send({"data": "1"});
-                console.log("Uploading to cloudinary");
-                
-                
-                await cloudinary.v2.uploader.upload(
-                  file,
-                  {
-                    public_id: "myfolder/sub_test",
-                    chunk_size: Math.pow(6.4, 7),
-                    invalidate: true,
-                  },
-                  (error, result) => {
-                    console.log(result, error);
-                    return false;
-                  }
-                );
-              } else {
-                console.log("The upload photo was not a data url string");
-                return false;
-              }
-        }
-        else {
-            console.log("req.body not available");
-        }
-        //res.send("You have posted to the enpoint");          
-        return Promise;
-    });
-    */
-    /*--------------------------------------------------------------------------- */
-
+  
     /* -------Apollo Server for GraphQL (Advanced JS server for GraphQL API)---------- */
     const apollo_server = new ApolloServer({
         schema: await buildSchema({         // GraphQL schema hooked up to Apollo server router
