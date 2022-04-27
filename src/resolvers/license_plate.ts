@@ -23,6 +23,26 @@ export class license_plate_resolver {
         return em.findOne(License_Plate, {lp});
     }
 
+    /* Removes a single car by license plate from the database */
+    @Mutation(() => License_Plate, {nullable: true})
+    async remove_car(
+        @Arg('lp', () => String) lp : string,
+        @Ctx() {em}: MyContext
+        ): Promise<License_Plate | null> {
+            const car = await em.findOne(License_Plate, {lp});
+            await em.nativeDelete(License_Plate, {lp});
+            return car;
+        }
+        
+    /* Removes all cars from the database*/
+    @Mutation(() => Number, {nullable: true})
+    async remove_all(
+        @Ctx() {em}: MyContext
+    ): Promise<number | null> {
+        await em.nativeDelete(License_Plate, {});
+        return null;
+    }
+
     /* Adds a New Car (row) to the database */
     @Mutation(() => License_Plate, {nullable: true})
     async add_car(
