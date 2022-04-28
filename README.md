@@ -1,6 +1,7 @@
 # License Plate Detection (LPD) Server
 
 Data stream provider and database server storage for the ALPR system <br/>
+Server Link: https://lpd.mosaicsensed.com/ <br/>
 
 ![](https://github.com/wtriddle/lpd-server/blob/master/server_image.PNG)
 
